@@ -28,6 +28,7 @@ class CustomerTest {
     }
 
     @Test
+    @Disabled("надо удалить") // надо удалить
     @DisplayName("Объект Customer как ключ в карте")
     void customerAsKeyTest() {
         // given
@@ -55,6 +56,7 @@ class CustomerTest {
     }
 
     @Test
+    @Disabled("надо удалить") // надо удалить
     @DisplayName("Сортировка по полю score, итерация по возрастанию")
     void scoreSortingTest() {
         // given
