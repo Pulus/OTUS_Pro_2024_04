@@ -1,6 +1,4 @@
 rootProject.name = "OTUS_Pro_2024_04"
-include("hw01-gradle")
-include("hw04-generics")
 
 pluginManagement{
     val jgitver: String by settings
@@ -23,4 +21,9 @@ pluginManagement{
         id("com.diffplug.spotless") version spotless
     }
 }
+
+include("hw01-gradle")
+include("hw04-generics")
+include("hw06-annotations")
+include("hw08-gc")
 
