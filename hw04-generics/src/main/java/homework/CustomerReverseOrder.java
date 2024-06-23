@@ -1,14 +1,17 @@
 package homework;
 
-@SuppressWarnings({"java:S1186", "java:S1135", "java:S1172"}) // при выполнении ДЗ эту аннотацию надо удалить
+import java.util.Comparator;
+import java.util.TreeMap;
+
 public class CustomerReverseOrder {
 
-    // todo: 2. надо реализовать методы этого класса
-    // надо подобрать подходящую структуру данных, тогда решение будет в "две строчки"
+    private final TreeMap<Integer, Customer> map = new TreeMap<>(Comparator.comparingInt(value -> value));
 
-    public void add(Customer customer) {}
+    public void add(Customer customer) {
+        map.put(map.size() + 1, customer);
+    }
 
     public Customer take() {
-        return null; // это "заглушка, чтобы скомилировать"
+        return map.pollLastEntry().getValue();
     }
 }
