@@ -1,8 +1,8 @@
 package ru.calculator;
 
 /*
--Xms256m
--Xmx256m
+-Xms3072m
+-Xmx3072m
 -XX:+HeapDumpOnOutOfMemoryError
 -XX:HeapDumpPath=./logs/heapdump.hprof
 -XX:+UseG1GC
