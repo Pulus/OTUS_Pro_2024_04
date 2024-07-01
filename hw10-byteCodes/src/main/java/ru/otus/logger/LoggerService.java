@@ -5,10 +5,10 @@ import static java.lang.reflect.Proxy.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import lombok.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.annotation.Log;
@@ -25,16 +25,13 @@ public class LoggerService {
                 handler);
     }
 
-    @Builder
-    static class MethodInfo {
-        String name;
-        Object[] args;
+    private static class MethodInfo {
+        private final String name;
+        private final Object[] args;
 
-        static MethodInfo buildMethodInfo(Method method) {
-            return MethodInfo.builder()
-                    .name(method.getName())
-                    .args(method.getParameterTypes())
-                    .build();
+        public MethodInfo (Method method) {
+            this.name = method.getName();
+            this.args = method.getParameterTypes();
         }
 
         @Override
@@ -51,9 +48,9 @@ public class LoggerService {
         }
     }
 
-    static class ProxyInvocationHandler<T> implements InvocationHandler {
+    private static class ProxyInvocationHandler<T> implements InvocationHandler {
         private final T instance;
-        private final List<MethodInfo> listMethodsInfo;
+        private final Set<MethodInfo> listMethodsInfo;
 
         public ProxyInvocationHandler(T instance) {
             this.instance = instance;
@@ -62,18 +59,18 @@ public class LoggerService {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (listMethodsInfo.contains(MethodInfo.buildMethodInfo(method))) {
+            if (listMethodsInfo.contains(new MethodInfo(method))) {
                 logger.info("executed method: {}, param:{}", method.getName(), args);
             }
 
             return method.invoke(instance, args);
         }
 
-        private List<MethodInfo> findMethodsWithAnnotation(T instance) {
+        private Set<MethodInfo> findMethodsWithAnnotation(T instance) {
             return Arrays.stream(instance.getClass().getMethods())
                     .filter(m -> m.isAnnotationPresent(Log.class))
-                    .map(MethodInfo::buildMethodInfo)
-                    .toList();
+                    .map(MethodInfo::new).
+                    collect(Collectors.toSet());
         }
     }
 }
