@@ -1,42 +1,48 @@
 package machine.demo;
 
+import java.util.Arrays;
+import java.util.List;
+
 import machine.data.CashMachine;
-import machine.data.MoneyBox;
 import machine.service.CashMachineService;
 import machine.service.MoneyBoxService;
 import machine.service.impl.CashMachineServiceImpl;
 import machine.service.impl.MoneyBoxServiceImpl;
-
-import java.util.Arrays;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DemoATM {
     static MoneyBoxService moneyBoxService;
     static CashMachineService cashMachineService;
+    private static final Logger logger = LoggerFactory.getLogger(DemoATM.class);
 
     static {
         moneyBoxService = new MoneyBoxServiceImpl();
         cashMachineService = new CashMachineServiceImpl(moneyBoxService);
     }
-    public void startShowingFunctional (){
-        MoneyBox moneyBox = new MoneyBox();
-        CashMachine cashMachine = new CashMachine(moneyBox);
 
-        int initialSum = cashMachineService.checkSum(cashMachine);
-        System.out.println("Initial sum " + initialSum);
-        System.out.println();
+    public void startShowingFunctional() {
+        try {
+            CashMachine cashMachine = new CashMachine();
+            cashMachineService.putMoney(cashMachine, Arrays.asList(1, 3, 4, 10, 10));
 
-        List<Integer> takenAmount = cashMachineService.getMoney(cashMachine, 7700);
-        System.out.println("Withdraw " + 7700);
-        System.out.println("Taken notes " + takenAmount);
+            int initialSum = cashMachineService.checkSum(cashMachine);
+            logger.info("Initial sum {}", initialSum);
 
-        initialSum = cashMachineService.checkSum(cashMachine);
-        System.out.println("New sum " + initialSum);
+            int amount = 7800;
+            List<Integer> takenAmount = cashMachineService.getMoney(cashMachine, amount);
+            logger.info("Withdraw {}", amount);
+            logger.info("Taken notes {}", takenAmount);
 
-        System.out.println();
-        cashMachineService.putMoney(cashMachine, Arrays.asList(0, 0, 0, 1));
-        initialSum = cashMachineService.checkSum(cashMachine);
-        System.out.println("Contribution " + 100);
-        System.out.println("New sum " + initialSum);
+            initialSum = cashMachineService.checkSum(cashMachine);
+            logger.info("New sum {}", initialSum);
+
+            cashMachineService.putMoney(cashMachine, Arrays.asList(1, 0, 0, 1));
+            initialSum = cashMachineService.checkSum(cashMachine);
+            logger.info("Contribution {}", 5100);
+            logger.info("New sum {}", initialSum);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
