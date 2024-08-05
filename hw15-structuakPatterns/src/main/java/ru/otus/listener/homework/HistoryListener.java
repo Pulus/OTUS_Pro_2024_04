@@ -13,13 +13,7 @@ public class HistoryListener implements Listener, HistoryReader {
 
     @Override
     public void onUpdated(Message msg) {
-        ObjectForMessage newFiled13 = null;
-
-        if (msg.getField13() != null) {
-            var field13Data = msg.getField13().getData();
-            newFiled13 = new ObjectForMessage();
-            newFiled13.setData(field13Data.stream().toList());
-        }
+        ObjectForMessage newFiled13 = msg.getField13().clone();
 
         Message message = new Message.Builder(msg.getId())
                 .field1(msg.getField1())

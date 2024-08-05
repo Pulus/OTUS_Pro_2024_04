@@ -9,7 +9,7 @@ import ru.otus.model.Message;
 import ru.otus.model.ObjectForMessage;
 import ru.otus.processor.homework.ProcessorChangeField;
 import ru.otus.processor.homework.ProcessorExceptEvenSecond;
-import ru.otus.time.TimeManager;
+import ru.otus.time.TimeProvider;
 
 public class HomeWork {
 
@@ -28,7 +28,7 @@ public class HomeWork {
     private static final Logger logger = LoggerFactory.getLogger(Demo.class);
 
     public static void main(String[] args) {
-        var processors = List.of(new ProcessorChangeField(), new ProcessorExceptEvenSecond(new TimeManager()));
+        var processors = List.of(new ProcessorChangeField(), new ProcessorExceptEvenSecond(new TimeProvider()));
 
         var complexProcessor = new ComplexProcessor(processors, ex -> {});
         var listenerPrinter = new ListenerPrinterConsole();

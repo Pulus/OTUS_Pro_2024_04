@@ -2,18 +2,18 @@ package ru.otus.processor.homework;
 
 import ru.otus.model.Message;
 import ru.otus.processor.Processor;
-import ru.otus.time.TimeManager;
+import ru.otus.time.TimeProvider;
 
 public class ProcessorExceptEvenSecond implements Processor {
-    private final TimeManager timeManager;
+    private final TimeProvider timeProvider;
 
-    public ProcessorExceptEvenSecond(TimeManager timeManager) {
-        this.timeManager = timeManager;
+    public ProcessorExceptEvenSecond(TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
     }
 
     @Override
     public Message process(Message message) {
-        int second = timeManager.getSecond();
+        int second = timeProvider.getTime().getSecond();
 
         if (second % 2 == 0) {
             throw new RuntimeException("An exception in an even second.");
