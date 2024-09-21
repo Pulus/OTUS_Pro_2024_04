@@ -17,4 +17,6 @@ public interface EntityClassMetaData<T> {
     List<Field> getAllFields();
 
     List<Field> getFieldsWithoutId();
+
+    MetaData<T> getAllMetaData();
 }
