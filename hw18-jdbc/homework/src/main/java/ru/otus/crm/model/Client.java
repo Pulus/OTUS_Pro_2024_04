@@ -1,10 +1,12 @@
 package ru.otus.crm.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class Client {
     @Id
     private Long id;
