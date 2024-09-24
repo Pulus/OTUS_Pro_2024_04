@@ -9,9 +9,13 @@ import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.otus.core.repository.DataTemplateHibernate;
 import ru.otus.core.repository.HibernateUtils;
 import ru.otus.core.sessionmanager.TransactionManagerHibernate;
+import ru.otus.crm.cachehw.HwCache;
+import ru.otus.crm.cachehw.MyCache;
 import ru.otus.crm.dbmigrations.MigrationsExecutorFlyway;
 import ru.otus.crm.model.Address;
 import ru.otus.crm.model.Client;
@@ -26,6 +30,8 @@ public abstract class AbstractHibernateTest {
     protected DBServiceClient dbServiceClient;
 
     private static TestContainersConfig.CustomPostgreSQLContainer CONTAINER;
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractHibernateTest.class);
 
     @BeforeAll
     public static void init() {
@@ -56,11 +62,17 @@ public abstract class AbstractHibernateTest {
 
         transactionManager = new TransactionManagerHibernate(sessionFactory);
         clientTemplate = new DataTemplateHibernate<>(Client.class);
-        dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
+        dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate, setCache());
     }
 
     protected EntityStatistics getUsageStatistics() {
         Statistics stats = sessionFactory.getStatistics();
         return stats.getEntityStatistics(Client.class.getName());
+    }
+
+    private HwCache<String, Client> setCache() {
+        HwCache<String, Client> cache = new MyCache<>();
+        cache.addListener((key, value, action) -> log.info("key:{}, value:{}, action: {}", key, value, action));
+        return cache;
     }
 }

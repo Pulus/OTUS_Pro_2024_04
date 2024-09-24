@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.core.repository.DataTemplate;
 import ru.otus.core.sessionmanager.TransactionManager;
+import ru.otus.crm.cachehw.HwCache;
 import ru.otus.crm.model.Client;
 
 public class DbServiceClientImpl implements DBServiceClient {
@@ -13,10 +14,15 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     private final DataTemplate<Client> clientDataTemplate;
     private final TransactionManager transactionManager;
+    private final HwCache<String, Client> cache;
 
-    public DbServiceClientImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate) {
+    public DbServiceClientImpl(
+            TransactionManager transactionManager,
+            DataTemplate<Client> clientDataTemplate,
+            HwCache<String, Client> cache) {
         this.transactionManager = transactionManager;
         this.clientDataTemplate = clientDataTemplate;
+        this.cache = cache;
     }
 
     @Override
@@ -26,21 +32,29 @@ public class DbServiceClientImpl implements DBServiceClient {
             if (client.getId() == null) {
                 var savedClient = clientDataTemplate.insert(session, clientCloned);
                 log.info("created client: {}", clientCloned);
+                cache.put(String.valueOf(savedClient.getId()), savedClient.clone());
                 return savedClient;
             }
             var savedClient = clientDataTemplate.update(session, clientCloned);
             log.info("updated client: {}", savedClient);
+            cache.put(String.valueOf(clientCloned.getId()), clientCloned);
             return savedClient;
         });
     }
 
     @Override
     public Optional<Client> getClient(long id) {
-        return transactionManager.doInReadOnlyTransaction(session -> {
-            var clientOptional = clientDataTemplate.findById(session, id);
-            log.info("client: {}", clientOptional);
-            return clientOptional;
-        });
+        Optional<Client> client = Optional.ofNullable(cache.get(String.valueOf(id)));
+        if (client.isEmpty()) {
+            client = transactionManager.doInReadOnlyTransaction(session -> {
+                var clientOptional = clientDataTemplate.findById(session, id);
+                log.info("client: {}", clientOptional);
+
+                cache.put(String.valueOf(id), clientOptional.get().clone());
+                return clientOptional;
+            });
+        }
+        return client;
     }
 
     @Override

@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import ru.otus.core.repository.DataTemplateHibernate;
 import ru.otus.core.repository.HibernateUtils;
 import ru.otus.core.sessionmanager.TransactionManagerHibernate;
+import ru.otus.crm.cachehw.HwCache;
+import ru.otus.crm.cachehw.MyCache;
 import ru.otus.crm.dbmigrations.MigrationsExecutorFlyway;
 import ru.otus.crm.model.Address;
 import ru.otus.crm.model.Client;
@@ -35,7 +37,10 @@ public class DbServiceDemo {
         ///
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
         ///
-        var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
+        HwCache<String, Client> cache = new MyCache<>();
+        cache.addListener((key, value, action) -> log.info("key:{}, value:{}, action: {}", key, value, action));
+
+        var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate, cache);
         dbServiceClient.saveClient(new Client(
                 null,
                 "dbServiceFirst",
