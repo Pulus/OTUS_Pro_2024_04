@@ -4,13 +4,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import ru.otus.crm.model.Id;
 
-@AllArgsConstructor
 public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
     private final Class<T> actualClass;
+    private final List<Field> declaredFields;
+    private final List<Field> fieldsWithoutId;
 
+    public EntityClassMetaDataImpl(Class<T> actualClass){
+        this.actualClass = actualClass;
+        this.declaredFields = Arrays.stream(actualClass.getDeclaredFields()).toList();
+        this.fieldsWithoutId = declaredFields.stream().filter(field -> !field.equals(getIdField())).toList();
+    }
     @Override
     public String getName() {
         return actualClass.getSimpleName();
@@ -27,26 +32,23 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
 
     @Override
     public Field getIdField() {
-        for (var field : actualClass.getDeclaredFields()) {
+        for (var field : declaredFields) {
             Id annotation = field.getAnnotation(Id.class);
             if (annotation != null) {
                 return field;
             }
         }
-
         return null;
     }
 
     @Override
     public List<Field> getAllFields() {
-        return Arrays.stream(actualClass.getDeclaredFields()).toList();
+        return declaredFields;
     }
 
     @Override
     public List<Field> getFieldsWithoutId() {
-        return Arrays.stream(actualClass.getDeclaredFields())
-                .filter(field -> !field.equals(getIdField()))
-                .toList();
+        return fieldsWithoutId;
     }
 
     @Override
