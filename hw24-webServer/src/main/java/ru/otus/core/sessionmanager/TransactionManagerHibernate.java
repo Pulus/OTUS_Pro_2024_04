@@ -1,4 +1,4 @@
-package ru.otus.core.sql.sessionmanager;
+package ru.otus.core.sessionmanager;
 
 import java.util.concurrent.Callable;
 import org.hibernate.SessionFactory;

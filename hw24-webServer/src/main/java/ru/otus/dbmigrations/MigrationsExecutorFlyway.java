@@ -1,4 +1,4 @@
-package ru.otus.crm.sql.dbmigrations;
+package ru.otus.dbmigrations;
 
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ public class MigrationsExecutorFlyway {
     public MigrationsExecutorFlyway(String dbUrl, String dbUserName, String dbPassword) {
         flyway = Flyway.configure()
                 .dataSource(dbUrl, dbUserName, dbPassword)
-                .locations("classpath:/db/migration")
+                .locations("classpath:/migration")
                 .load();
     }
 

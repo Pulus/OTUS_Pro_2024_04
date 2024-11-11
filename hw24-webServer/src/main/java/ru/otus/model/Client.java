@@ -1,4 +1,4 @@
-package ru.otus.crm.model;
+package ru.otus.model;
 
 import jakarta.persistence.*;
 import java.util.List;
@@ -44,6 +44,13 @@ public class Client implements Cloneable {
 
     public <E> Client(Long id, String name, Address address, List<Phone> phones) {
         this.id = id;
+        this.name = name;
+        this.address = address;
+        this.phones = phones;
+        this.phones.forEach(phone -> phone.setClient(this));
+    }
+
+    public Client(String name, Address address, List<Phone> phones) {
         this.name = name;
         this.address = address;
         this.phones = phones;

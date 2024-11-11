@@ -1,4 +1,4 @@
-package ru.otus.crm.model;
+package ru.otus.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -25,6 +25,11 @@ public class Phone implements Cloneable {
 
     public Phone(Long id, String number) {
         this.id = id;
+        this.number = number;
+    }
+
+    public Phone(String number) {
+        this.id = null;
         this.number = number;
     }
 

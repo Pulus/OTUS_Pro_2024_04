@@ -1,4 +1,4 @@
-package ru.otus.crm.model;
+package ru.otus.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,6 +21,10 @@ public class Address implements Cloneable {
 
     @Column(name = "street")
     private String street;
+
+    public Address(String street) {
+        this.street = street;
+    }
 
     @Override
     @SuppressWarnings({"java:S2975", "java:S1182"})
