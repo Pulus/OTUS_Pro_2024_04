@@ -1,5 +1,8 @@
 package ru.otus.service;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
+
+import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -8,10 +11,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import ru.otus.domain.Message;
 import ru.otus.repository.MessageRepository;
-
-import java.time.Duration;
-
-import static java.time.temporal.ChronoUnit.SECONDS;
 
 @Service
 public class DataStoreR2dbc implements DataStore {
@@ -34,5 +33,11 @@ public class DataStoreR2dbc implements DataStore {
     public Flux<Message> loadMessages(String roomId) {
         log.info("loadMessages roomId:{}", roomId);
         return messageRepository.findByRoomId(roomId).delayElements(Duration.of(3, SECONDS), workerPool);
+    }
+
+    @Override
+    public Flux<Message> loadAllMessages() {
+        log.info("loadAllMessages");
+        return messageRepository.findAll().delayElements(Duration.of(3, SECONDS), workerPool);
     }
 }
