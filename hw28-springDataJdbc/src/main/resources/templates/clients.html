@@ -1,7 +1,41 @@
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <title>Клиенты</title>
+
+    <script>
+        function createClient() {
+            const name = document.getElementById('name');
+            const street = document.getElementById('street');
+            const phones = document.getElementById('phones');
+
+            console.log(name.value)
+
+            fetch('/clients', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name.value,
+                    address: street.value,
+                    phones: phones.value,
+                }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error!`);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log(data);
+                    window.location.href = "/clients";
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
 </head>
 
 <body>
@@ -9,45 +43,45 @@
     <h4>Создать клиента</h4>
     <br/>
     <form action="/clients" method="post">
-        <label>Имя:</label>
-        <input type="text" name="name">
+        <label> Имя:<br/>
+            <input id="name" type="text" name="name">
+        </label>
         <br/>
-        <label>Адрес:</label>
-        <input type="text" name="street">
+        <label>Адрес:<br/>
+            <input id="street" type="text" name="street">
+        </label>
         <br/>
-        <label>Телефоны (через ","):</label>
-        <input type="text" name="phones">
+        <label>Телефоны (через ","):<br/>
+            <input id="phones" type="text" name="phones">
+        </label>
         <br/>
-        <input type="submit" value="Добавить">
-        <br/>
+        <input type="button" onclick="createClient()" value="Добавить клиента">
     </form>
 </div>
 <br/>
-<div class="top">
-    <h4>Список клиентов</h4>
-    <table style="width: 700px">
-        <thead>
-        <tr>
-            <td style="width: 50px">Id</td>
-            <td style="width: 150px">Имя</td>
-            <td style="width: 250px">Адрес</td>
-            <td style="width: 250px">Телефоны</td>
-        </tr>
-        </thead>
-        <tbody>
-        <#list clients as client>
-        <tr>
-            <td>${client.id}</td>
-            <td>${client.name}</td>
-            <td>${client.address.street}</td>
-            <td>
-                <#list client.phones as phone>
-                <div>${phone.number}</div>
-            </#list>
-            </td>
-        </tr>
-        </#list>
-        </tbody>
-    </table>
+
+<h4>Список клиентов</h4>
+<table style="width: 700px" class="clients">
+    <thead>
+    <tr>
+        <td style="width: 50px">Id</td>
+        <td style="width: 150px">Имя</td>
+        <td style="width: 250px">Адрес</td>
+        <td style="width: 250px">Телефоны</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="client : ${clients}">
+        <td th:text="${client.id}"></td>
+        <td th:text="${client.name}"></td>
+        <td th:text="${client.street}"></td>
+        <td>
+                <span th:each="phone : ${client.phones}">
+                    <div th:text="${phone.number}"></div>
+                </span>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>
