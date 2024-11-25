@@ -1,41 +1,30 @@
 package ru.otus.model;
 
-import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@Entity
 @Table(name = "phone")
-public class Phone implements Cloneable {
+@Getter
+@ToString
+public class Phone {
     @Id
-    @SequenceGenerator(name = "phone_gen", sequenceName = "phone_seq", initialValue = 1, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "phone_gen")
-    @Column(name = "id")
-    private Long id;
+    private final Long id;
 
-    @Column(name = "number")
-    private String number;
+    private final Long clientId;
 
-    @ManyToOne
-    private Client client;
+    private final String number;
 
-    public Phone(Long id, String number) {
+    @PersistenceCreator
+    public Phone(Long id, Long clientId, String number) {
         this.id = id;
+        this.clientId = clientId;
         this.number = number;
     }
 
     public Phone(String number) {
-        this.id = null;
-        this.number = number;
-    }
-
-    @Override
-    @SuppressWarnings({"java:S2975", "java:S1182"})
-    protected Phone clone() {
-        return new Phone(this.id, this.number);
+        this(null, null, number);
     }
 }
