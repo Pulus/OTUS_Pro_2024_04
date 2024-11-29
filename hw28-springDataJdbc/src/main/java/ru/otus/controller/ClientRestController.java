@@ -1,4 +1,4 @@
-package ru.otus.server;
+package ru.otus.controller;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -21,8 +21,8 @@ public class ClientRestController {
     private final DBServiceClient clientRepository;
     private final DbServiceAddress addressRepository;
 
-    @PostMapping("/clients")
-    public RedirectView saveClint(@RequestBody ClientRequest clientRequest) {
+    @PostMapping("/api/clients")
+    public Client saveClint(@RequestBody ClientRequest clientRequest) {
         Set<Phone> phoneList =
                 Arrays.stream(clientRequest.phones().split(",")).map(Phone::new).collect(Collectors.toSet());
 
@@ -30,8 +30,6 @@ public class ClientRestController {
 
         Client client = new Client(clientRequest.name(), savingAddress.getId(), phoneList);
 
-        clientRepository.saveClient(client);
-
-        return new RedirectView("/clients", true);
+        return clientRepository.saveClient(client);
     }
 }

@@ -1,4 +1,4 @@
-package ru.otus.server;
+package ru.otus.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.view.RedirectView;
 import ru.otus.dto.ClientView;
 import ru.otus.model.Address;
 import ru.otus.model.Client;
@@ -35,5 +37,11 @@ public class ClientController {
 
         model.addAttribute("clients", clientViews);
         return "clients";
+    }
+
+    @PostMapping("/client/save")
+    public RedirectView clientSave(Client client) {
+        clientRepository.saveClient(client);
+        return new RedirectView("/", true);
     }
 }
